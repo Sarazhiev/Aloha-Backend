@@ -1,9 +1,9 @@
-
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
-import ClothesModel from "../models/Clothes.js";
-import {update} from "./ClothesController.js";
+import {bot} from "../index.js";
+
+
 
 
 export const register = async (req, res) => {
@@ -174,7 +174,7 @@ export const handleOrders = async (req, res) => {
             orders: [...user.orders, req.body],
         }, {
             returnDocument: 'after',
-        }, (err, doc) => {
+        }, async (err, doc) => {
             if (err) {
                 console.log(err)
                 return  res.status(500).json({
@@ -186,6 +186,30 @@ export const handleOrders = async (req, res) => {
                     message: 'Юзер не найден'
                 })
             }
+
+           await bot.sendMessage(530135171, `
+            <b>Номер заказа </b> : ${req.body.number} \n
+            <b>Имя заказчика </b> : ${req.body.surname} ${req.body.name} \n
+            <b>Почтовый ящик </b> : ${req.body.email} \n
+            <b>Телефонный номер </b> : ${req.body.phone} \n
+            <b>Время заказа </b> : ${req.body.time} \n
+            <b>Общая цена</b> : ${req.body.price} \n
+            `,{parse_mode : "HTML"})
+
+
+           await bot.sendMessage(530135171, `Обработка закза ${req.body.number}`, {
+                reply_markup: JSON.stringify({
+                    inline_keyboard: [
+                        [{text: "Подтвердить", callback_data: `success ${req.body._id}` }],
+                        [{text: "Отклонить", callback_data: `cancel ${req.body._id}` }]
+                    ]
+                })
+            })
+
+
+            req.body.orders.map((item) => {
+                bot.sendPhoto(530135171, `https://devkg.com/i/organizations-124df2aaf03a29d75470cd5b451b0e2a`)
+            })
             res.json(doc)
         })
     } catch (err) {
@@ -235,3 +259,4 @@ export const handleStatus = async (req, res) => {
         })
     }
 }
+

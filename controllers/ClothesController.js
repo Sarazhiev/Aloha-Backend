@@ -110,7 +110,7 @@ export const update =  async (req, res) => {
             price : req.body.price,
             priceSale : req.body.priceSale,
             gender : req.body.gender,
-            image: req.body.image,
+            images: req.body.images,
             colors: req.body.colors,
             sizes: req.body.sizes,
             category: req.body.category,
