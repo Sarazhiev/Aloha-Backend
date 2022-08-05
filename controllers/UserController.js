@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
+import OrdersModel from "../models/Orders.js";
 import jwt from "jsonwebtoken";
 import {bot} from "../index.js";
 
@@ -114,7 +115,8 @@ export const getAllUser = async (req, res) => {
 export const getAllOrders = async (req, res) => {
     try {
         const users = await UserModel.find();
-        res.json(users.map((item) =>  item.orders).filter(item => item.length).flat())
+        const orders = await OrdersModel.find()
+        res.json([...users.map((item) =>  item.orders).filter(item => item.length).flat(), ...orders])
     } catch (err) {
         console.log(err)
         res.status(500).json({
